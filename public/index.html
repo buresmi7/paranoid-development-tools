@@ -9,15 +9,28 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
 
+    <link rel="stylesheet" href="libs/pretty-print-json.css">
+    <link rel="stylesheet" href="libs/highlight-default.css">
+
+    <style>
+        .textarea {
+            min-height: 300px;
+            font-family: monospace;
+            white-space: pre;
+            overflow-x: scroll;
+        }
+    </style>
+
     <title>Paranoid development tools</title>
 </head>
 <body>
 <div class="container">
     <h1 class="display-6" style="margin-top: 1em;">
-        <strong>Paranoid</strong> development tools
-        <small class="text-muted"> - do not share your private data</small>
+        <strong style="color: red">Paranoid</strong> development tools
+        <small class="text-muted"> - do not share your <span style="color: red">private</span> data</small>
     </h1>
-    <p>All data operations are done on client side, not server side. All data remains in a browser. The page source code available on <a href="https://github.com/buresmi7/paranoid-development-tools">GitHub</a>.</p>
+    <p>All data operations are done on client side, not server side. All data remains in a browser. The page source code
+        available on <a href="https://github.com/buresmi7/paranoid-development-tools">GitHub</a>.</p>
     <ul class="nav nav-tabs" id="myTab" role="tablist" style="margin-top: 1em;">
         <li class="nav-item" role="presentation">
             <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home" type="button"
@@ -27,6 +40,18 @@
         <li class="nav-item" role="presentation">
             <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button"
                     role="tab" aria-controls="profile" aria-selected="false">Base64 decode
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="yaml-to-json-tab" data-bs-toggle="tab" data-bs-target="#yaml-to-json-content"
+                    type="button"
+                    role="tab" aria-controls="yaml-to-json-content" aria-selected="false">Yaml to JSON convert
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="json-to-yaml-tab" data-bs-toggle="tab" data-bs-target="#json-to-yaml-content"
+                    type="button"
+                    role="tab" aria-controls="json-to-yaml-content" aria-selected="false">JSON to Yaml convert
             </button>
         </li>
     </ul>
@@ -57,6 +82,36 @@
                 <textarea class="form-control" id="decoded-base64" rows="10"></textarea>
             </div>
         </div>
+        <div class="tab-pane fade" id="yaml-to-json-content" role="tabpanel" aria-labelledby="yaml-to-json-content">
+            <div class="row">
+                <div class="mb-3 col-sm-5">
+                    <label for="yaml-to-json-input" class="form-label">Yaml input</label>
+                    <textarea class="code textarea form-control" id="yaml-to-json-input" rows="14"></textarea>
+                </div>
+                <div class="mb-3 col-sm-2 align-self-center text-center">
+                    <button type="button" class="btn btn-primary" id="yaml-to-json-button">Convert</button>
+                </div>
+                <div class="mb-3 col-sm-5">
+                    <label for="decoded-base64" class="form-label">JSON output</label>
+                    <div contenteditable="true" class="textarea form-control" id="yaml-to-json-output"></div>
+                </div>
+            </div>
+        </div>
+        <div class="tab-pane fade" id="json-to-yaml-content" role="tabpanel" aria-labelledby="json-to-yaml-content">
+            <div class="row">
+                <div class="mb-3 col-sm-5">
+                    <label for="json-to-yaml-input" class="form-label">Yaml input</label>
+                    <textarea class="code textarea form-control" id="json-to-yaml-input" rows="14"></textarea>
+                </div>
+                <div class="mb-3 col-sm-2 align-self-center text-center">
+                    <button type="button" class="btn btn-primary" id="json-to-yaml-button">Convert</button>
+                </div>
+                <div class="mb-3 col-sm-5">
+                    <label for="decoded-base64" class="form-label">JSON output</label>
+                    <div contenteditable="true" class="textarea form-control" id="json-to-yaml-output"></div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -64,6 +119,11 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0"
         crossorigin="anonymous"></script>
+<script src="libs/js-yaml.min.js"></script>
+<script src="libs/pretty-print-json.min.js"></script>
+<script src="libs/yaml.js"></script>
+<script src="libs/jsonlint.js"></script>
+
 <script>
     document.getElementById('encode-button').addEventListener("click", () => {
         const encoded = btoa(document.getElementById('raw-input').value)
@@ -75,9 +135,32 @@
             const decoded = atob(document.getElementById('base64-input').value)
             document.getElementById('decoded-base64').value = decoded
         } catch (e) {
-            alert(`Decode error: ${e.message}`)
+            document.getElementById('decoded-base64').value = `Decode error: ${e.message}`
         }
     }, false);
+
+    document.getElementById('yaml-to-json-button').addEventListener("click", () => {
+        try {
+            const yaml = document.getElementById('yaml-to-json-input').value
+            const result = jsyaml.load(yaml)
+            document.getElementById('yaml-to-json-output').innerHTML = prettyPrintJson.toHtml(result, {quoteKeys: true,indent: 2})
+        } catch (e) {
+            document.getElementById('yaml-to-json-output').innerHTML = `Convert error: ${e.message}`
+        }
+    }, false);
+
+    document.getElementById('json-to-yaml-button').addEventListener("click", () => {
+        try {
+            const json = document.getElementById('json-to-yaml-input').value
+            jsonlint.parse(json)
+            const result = YAML.stringify(JSON.parse(json), 100, 2)
+
+            document.getElementById('json-to-yaml-output').innerHTML = result
+        } catch (e) {
+            document.getElementById('json-to-yaml-output').innerHTML = `Convert error: ${e.message}`
+        }
+    }, false);
+
 </script>
 </body>
 </html>

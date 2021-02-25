@@ -1,0 +1,24 @@
+{
+  "name": "paranoid-development-tools",
+  "version": "1.0.0",
+  "description": "Available Base64 encode and decode. All data operations are done on client side, not server side. All data remains in a browser.",
+  "main": "public/index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/buresmi7/paranoid-development-tools.git"
+  },
+  "author": "Michal Bureš",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/buresmi7/paranoid-development-tools/issues"
+  },
+  "homepage": "https://github.com/buresmi7/paranoid-development-tools#readme",
+  "devDependencies": {
+    "highlight.js": "^10.6.0",
+    "js-yaml": "^4.0.0",
+    "pretty-print-json": "^1.0.0"
+  }
+}
