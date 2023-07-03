@@ -45,13 +45,19 @@
         <li class="nav-item" role="presentation">
             <button class="nav-link" id="yaml-to-json-tab" data-bs-toggle="tab" data-bs-target="#yaml-to-json-content"
                     type="button"
-                    role="tab" aria-controls="yaml-to-json-content" aria-selected="false">Yaml to JSON convert
+                    role="tab" aria-controls="yaml-to-json-content" aria-selected="false">Yaml to JSON
             </button>
         </li>
         <li class="nav-item" role="presentation">
             <button class="nav-link" id="json-to-yaml-tab" data-bs-toggle="tab" data-bs-target="#json-to-yaml-content"
                     type="button"
-                    role="tab" aria-controls="json-to-yaml-content" aria-selected="false">JSON to Yaml convert
+                    role="tab" aria-controls="json-to-yaml-content" aria-selected="false">JSON to Yaml
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="text-to-url-tab" data-bs-toggle="tab" data-bs-target="#text-to-url-content"
+                    type="button"
+                    role="tab" aria-controls="text-to-url-content" aria-selected="false">Text to URL
             </button>
         </li>
     </ul>
@@ -112,6 +118,22 @@
                 </div>
             </div>
         </div>
+        <div class="tab-pane fade" id="text-to-url-content" role="tabpanel" aria-labelledby="text-to-url-tab">
+            <p>Is used the encodeURIComponent function as a tool used in JavaScript to safely put special characters into a web address (or URL). It changes certain characters into a different format that can be used in a URL without causing problems.</p>
+            <p>Will convert these characters: ! * ' ( ) ; : @ & = + $ , / ? % # [ ]</p>
+            <p>But will not touch: A-Z a-z 0-9 - _ . ~</p>
+            <div class="mb-3">
+                <label for="text-to-url-input" class="form-label">Text</label>
+                <textarea class="form-control" id="text-to-url-input" rows="10"></textarea>
+            </div>
+            <div class="mb-3">
+                <button type="button" class="btn btn-primary" id="text-to-url-button">Encode</button>
+            </div>
+            <div class="mb-3">
+                <label for="text-to-url-output" class="form-label">URL Encoded</label>
+                <textarea class="form-control" id="text-to-url-output" rows="10"></textarea>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -159,6 +181,11 @@
         } catch (e) {
             document.getElementById('json-to-yaml-output').innerHTML = `Convert error: ${e.message}`
         }
+    }, false);
+
+    document.getElementById('text-to-url-button').addEventListener("click", () => {
+      const output = encodeURIComponent(document.getElementById('text-to-url-input').value)
+      document.getElementById('text-to-url-output').value = output
     }, false);
 
 </script>
