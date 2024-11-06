@@ -1,0 +1,37 @@
+name: Generate SRI Hash
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Install Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+
+      - name: Generate SRI Hash for JavaScript file
+        run: |
+          HASH=$(cat main.js | openssl dgst -sha384 -binary | openssl base64 -A)
+          echo "sha384-$HASH" > sri-hash.txt
+
+      - name: Update HTML file with SRI Hash
+        run: |
+          HASH=$(cat sri-hash.txt)
+          sed -i "s|<script src=\"main.js\"></script>|<script src=\"main.js\" integrity=\"$HASH\" crossorigin=\"anonymous\"></script>|g" index.html
+
+      - name: Commit changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add index.html
+          git commit -m "Update SRI hash in index.html"
+          git push
