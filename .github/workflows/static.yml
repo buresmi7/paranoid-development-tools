@@ -31,13 +31,26 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+
+      - name: Generate SRI Hash for JavaScript file
+        run: |
+          HASH=$(cat public/main.js | openssl dgst -sha384 -binary | openssl base64 -A)
+          echo "sha384-$HASH" > sri-hash.txt
+
+      - name: Update HTML file with SRI Hash
+        run: |
+          HASH=$(cat sri-hash.txt)
+          sed -i "s|<script src=\"main.js\"></script>|<script src=\"main.js\" integrity=\"$HASH\" crossorigin=\"anonymous\"></script>|g" public/index.html
+
       - name: Setup Pages
         uses: actions/configure-pages@v3
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
           # Upload entire repository
           path: './public'
+
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v2
